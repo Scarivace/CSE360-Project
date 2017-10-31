@@ -269,17 +269,17 @@ public class textAnalyzer extends JFrame implements ActionListener
 
 		while (line != null)   						// While line is not null.
 		{						
-			inWord = false; //set inWord to false at beginning of each line
-			for (int i = 0; i < line.length(); i++) // Iterates through the line char by char while 'i' is < string length.
+			inWord = false; 					//set inWord to false at beginning of each line
+			for (int i = 0; i < line.length(); i++) 		// Iterates through the line char by char while 'i' is < string length.
 			{		
-      			if (line.charAt(i) == ' ' && inWord) // If current char is a space and in a word boolean is true.
+      			if (line.charAt(i) == ' ' && inWord) 			// If current char is a space and in a word boolean is true.
             	{		
                		inWord = false;
                 }
-           		if (!inWord && line.charAt(i) != ' ') // If not in a word and char is not a space, in a word is set to true.
+           		if (!inWord && line.charAt(i) != ' ') 			// If not in a word and char is not a space, in a word is set to true.
            		{		
            			inWord = true;
-               		counter++;				// Counter is incremented.
+               		counter++;						// Counter is incremented.
            		}
 			}
 
