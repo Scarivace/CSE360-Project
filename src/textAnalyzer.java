@@ -11,6 +11,31 @@ public class textAnalyzer extends JFrame implements ActionListener
 	final static int WIDTH = 1000;
 	final static int ROW_HEIGHT = 75;
 	final static int NUM_ROWS = 10;
+
+	final String helpInformation = "This program will open a file you specify and analyze it as follows: \n" +
+			"  Count the number of lines in the file,\n" +
+			"  Count the number of blank lines in the file,\n" +
+			"  Count the number of spaces in the file,\n" +
+			"  Count the number of characters in the file, \n" +
+			"  Count the number of words in the file,\n" +
+			"  Display the longest word in the file,\n" +
+			"  Display the most frequent word appearing in the file.\n\n\n" +
+			"Definitions:\n" +
+			"  A blank line is a line with NO characters on it.\n" +
+			"  For character count, all characters are considered valid, including spaces and punctuation\n" +
+			"  Words:\n" +
+			"    Apostrophes between letters will be assumed to be valid, all others will be removed \n" +
+			"    Except as above, any numbers or punctuation inside of a word will be removed\n" +
+			"    Words are not validated against a dictionary to ensure correctness\n\n" +
+			"A record is kept of the files that have been analyzed and their statistics. \n" +
+			"Averages are also kept across files and displayed as indicated.\n\n" +
+			"RESET will clear all history and the current file.";
+	
+	/* Menu Bar */
+	JMenuBar menuBar = new JMenuBar();
+	JMenu menu = new JMenu("Menu");
+	JMenuItem helpOption = new JMenuItem("Help");
+	JMenuItem resetOption = new JMenuItem("RESET");
 	
 	/* Labels for calculated data */
 	JLabel numLinesLabel = new JLabel(" ");
@@ -21,6 +46,9 @@ public class textAnalyzer extends JFrame implements ActionListener
 	JLabel avgWordLengthLabel = new JLabel(" ");
 	JLabel longestWordLabel = new JLabel(" ");
 	JLabel mostFrequentLabel = new JLabel(" ");
+	
+	// Button to begin analysis
+	JButton analyzeButton = new JButton("Analyze");
 	
 	/* Text Box to receive text file name */
 	JTextField fileNameField = new JTextField("",20);
@@ -61,8 +89,17 @@ public class textAnalyzer extends JFrame implements ActionListener
     	JLabel mostFrequentWordHeading = new JLabel("Most Frequent Word in File: ");
     	mostFrequentWordHeading.setHorizontalAlignment(JLabel.RIGHT);
     	
+    	/* Setup Menu Bar */
+    	menuBar.add(Box.createHorizontalGlue());
+    	menuBar.add(menu);
+    	menu.add(helpOption);
+    	menu.add(resetOption);
+    	helpOption.addActionListener(this);
+      	resetOption.addActionListener(this);
+    	frame.setJMenuBar(menuBar);
+    	
     	/* Analyze button to accept input and begin analyzing */
-    	JButton analyzeButton = new JButton("Analyze");
+    	analyzeButton.addActionListener(this);
     	
         /* c is used for each component when added */
         GridBagConstraints c = new GridBagConstraints();
@@ -185,40 +222,52 @@ public class textAnalyzer extends JFrame implements ActionListener
 	
 	public void actionPerformed(ActionEvent eventName)
 	{
-		String fileName = fileNameField.getText();
+		Object source = eventName.getSource();
 		
-		int lines, blankLines, words, characters, spaces;
-				
-		File file = new File(fileName);
-
-		if(file.exists() && file.canRead())
+		if(source == analyzeButton)
 		{
-			try
-			{
-				lines = Lines(file);
-				numLinesLabel.setText("" + lines);;
-				blankLines = BlankLines(file);
-				numBlankLinesLabel.setText("" + blankLines);
-				words = Words(file);
-				numWordsLabel.setText("" + words);
-				characters = Characters(file);
-				numCharactersLabel.setText("" + characters);
-				spaces = Spaces(file);
-				numSpacesLabel.setText("" + spaces);
-
+			String fileName = fileNameField.getText();
+		
+			int lines, blankLines, words, characters, spaces;
 				
-			}
-			catch (IOException errorMessage)
+			File file = new File(fileName);
+
+			if(file.exists() && file.canRead())
 			{
-				JOptionPane.showMessageDialog(null,errorMessage.getMessage(),"IO Error",JOptionPane.ERROR_MESSAGE);
+				try
+				{
+					lines = Lines(file);
+					numLinesLabel.setText("" + lines);;
+					blankLines = BlankLines(file);
+					numBlankLinesLabel.setText("" + blankLines);
+					words = Words(file);
+					numWordsLabel.setText("" + words);
+					characters = Characters(file);
+					numCharactersLabel.setText("" + characters);
+					spaces = Spaces(file);
+					numSpacesLabel.setText("" + spaces);
+				}
+				catch (IOException errorMessage)
+				{
+					JOptionPane.showMessageDialog(null,errorMessage.getMessage(),"IO Error",JOptionPane.ERROR_MESSAGE);
+				}
 			}
-			
+			else
+			{
+				JOptionPane.showMessageDialog(null,"File Name: " + file + ",  File Read Error\n","File Read Error",JOptionPane.ERROR_MESSAGE);
+			}
+	
 		}
-		else
+	
+		if(source == helpOption)
 		{
-			JOptionPane.showMessageDialog(null,"File Name: " + file + ",  File Read Error\n","File Read Error",JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null,helpInformation);
 		}
 		
+		if(source == resetOption)
+		{
+			// Code to be determined
+		}
 	}
 	
 	public static int Lines(File file) throws IOException
