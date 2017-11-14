@@ -67,8 +67,7 @@ public class textAnalyzer extends JFrame implements ActionListener
         JPanel analysisPanel = new JPanel();
         analysisPanel.setLayout(new GridBagLayout());
         analysisPanel.setBackground(Color.white);
-        
-            	
+                    	
     	/* Text Labels for GUI */
     	JLabel requestFileHeading = new JLabel("Please enter file name: ");
     	requestFileHeading.setHorizontalAlignment(JLabel.RIGHT);
