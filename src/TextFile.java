@@ -11,20 +11,28 @@ public class TextFile
 {
 
 	private String filename;
+	private String dateAnalyzed;
 	private int numLines;
 	private int numBlankLines;
 	private int numWords;
 	private int numCharacters;
 	private int numSpaces;
+	private String longestWord;
+	private String frequentWord;
+	private int frequentWordCount;
 	
 	public TextFile() // Default Constructor
 	{
 		filename = "none.txt";
+		dateAnalyzed = "0/0/0";
 		numLines = 0;
 		numBlankLines = 0;
 		numWords = 0;
 		numCharacters = 0;
 		numSpaces = 0;
+		longestWord = "";
+		frequentWord = "";
+		frequentWordCount = 0;
 	}
 	
 	public TextFile(String name) // Overloaded constructor - just filename
@@ -32,6 +40,34 @@ public class TextFile
 		filename = name;
 		
 		File file = new File(name);
+
+		if(file.exists() && file.canRead())
+		{
+			try
+			{
+				numLines = Lines(file);
+				numBlankLines = BlankLines(file);
+				numWords = Words(file);
+				numCharacters = Characters(file);
+				numSpaces = Spaces(file);
+				
+			}
+			catch (IOException errorMessage)
+			{
+				JOptionPane.showMessageDialog(null,errorMessage.getMessage(),"IO Error",JOptionPane.ERROR_MESSAGE);
+			}
+			
+		}
+		else
+		{
+			JOptionPane.showMessageDialog(null,"File Name: " + file + ",  File Read Error\n","File Read Error",JOptionPane.ERROR_MESSAGE);
+		}
+		
+	}
+	
+	public TextFile(File file) // Overloaded constructor - just file
+	{
+		filename = file.getName();
 
 		if(file.exists() && file.canRead())
 		{
@@ -73,6 +109,11 @@ public class TextFile
 		return filename;
 	}
 	
+	public String getDate()
+	{
+		return dateAnalyzed;
+	}
+	
 	public int getLines()
 	{
 		return numLines;
@@ -96,6 +137,21 @@ public class TextFile
 	public int getSpaces()
 	{
 		return numSpaces;
+	}
+	
+	public String getLongest()
+	{
+		return longestWord;
+	}
+	
+	public String getMostFrequent()
+	{
+		return frequentWord;
+	}
+	
+	public int getFrequentCount()
+	{
+		return frequentWordCount;
 	}
 	
 	public static int Lines(File file) throws IOException
@@ -200,5 +256,14 @@ public class TextFile
 	    }
 		fileScanner.close();
 		return num;
+	}
+	
+	public String toString()
+	{
+		String returnString = "";
+		
+		returnString = String.format("%-15s %s %5d %5d %5d %5d %5d %15s %15s %5d", filename, dateAnalyzed, numLines, numBlankLines, numWords, numCharacters, numSpaces, longestWord, frequentWord, frequentWordCount);
+		
+		return returnString;
 	}
 }
