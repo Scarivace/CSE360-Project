@@ -258,6 +258,9 @@ public class TextFile
 		return num;
 	}
 	
+	/** 
+		Method to read from the output file for history. Should create a linked list of TextFile Objects and output a string.
+	*/
 	public String toString()
 	{
 		String returnString = "";
