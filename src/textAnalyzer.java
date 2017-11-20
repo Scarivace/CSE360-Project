@@ -373,4 +373,44 @@ public class textAnalyzer extends JFrame implements ActionListener
 		return num;
 	}
 	
+	/**
+		Method to create an output file from the data sent to the actionListiner class. DOUBLE PRINT ERROR!
+	*/
+	public static void Output(int lines, int blankLines, int words, int characters, int spaces) throws IOException {
+		
+		File output = null;							 // Object Declarations.
+		FileWriter scribe = null;
+		BufferedWriter writer = null;
+
+		String fileName = "Output.txt";						 // String Declarations.
+		String content = lines + " " + blankLines + " " + words + " " + characters + " " + spaces + "\n";
+		
+		try {
+			output = new File(fileName);
+			
+			if (!output.exists()) {						 // If the file doesn't exist then create it.
+				output.createNewFile();
+			
+				scribe = new FileWriter(output.getAbsoluteFile()); 	 // THE SOURCE OF ERRORS.
+
+			}
+			else {
+				scribe = new FileWriter(output.getAbsoluteFile(), true); // THE SOURCE OF ERRORS.
+			}
+			
+			writer = new BufferedWriter(scribe);
+			
+			writer.write(content);
+			
+			writer.close();
+			scribe.close();
+		
+		} catch (IOException e) {
+			
+			e.printStackTrace();						 // To find out where I went wrong.
+			
+		}
+
+	}
+	
 }
