@@ -1,4 +1,5 @@
 import javax.swing.*;
+import javax.swing.border.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
@@ -8,8 +9,8 @@ import java.io.*;
 public class textAnalyzer extends JFrame implements ActionListener
 {
 	/* Constants for width of window and row height */
-	final static int WIDTH = 1000;
-	final static int ROW_HEIGHT = 75;
+	final static int WIDTH = 2000;
+	final static int ROW_HEIGHT = 150;
 	final static int NUM_ROWS = 10;
 
 	final String helpInformation = "This program will open a file you specify and analyze it as follows: \n" +
@@ -47,8 +48,12 @@ public class textAnalyzer extends JFrame implements ActionListener
 	JLabel longestWordLabel = new JLabel(" ");
 	JLabel mostFrequentLabel = new JLabel(" ");
 	
-	// Button to begin analysis
+	/* File Chooser */
+	final JFileChooser fc = new JFileChooser();
+	
+	/* Buttons */
 	JButton analyzeButton = new JButton("Analyze");
+	JButton browseButton = new JButton("Browse...");
 	
 	/* Text Box to receive text file name */
 	JTextField fileNameField = new JTextField("",20);
@@ -57,6 +62,16 @@ public class textAnalyzer extends JFrame implements ActionListener
     {
     	int height = NUM_ROWS * ROW_HEIGHT;
     	
+    	Border blackline, raisedetched, loweredetched, 
+        raisedbevel, loweredbevel, empty;
+
+    	blackline = BorderFactory.createLineBorder(Color.black);
+    	raisedetched = BorderFactory.createEtchedBorder(EtchedBorder.RAISED);
+    	loweredetched = BorderFactory.createEtchedBorder(EtchedBorder.LOWERED);
+    	raisedbevel = BorderFactory.createRaisedBevelBorder();
+    	loweredbevel = BorderFactory.createLoweredBevelBorder();	
+    	empty = BorderFactory.createEmptyBorder();
+    	
         //Create and set up the window.
         JFrame frame = new JFrame("Text Analyzer");
         frame.setSize(new Dimension(WIDTH,height));
@@ -64,16 +79,22 @@ public class textAnalyzer extends JFrame implements ActionListener
         frame.setLayout(new GridBagLayout());
         
         /* Panels for sections of analyzer */
+        JPanel mainPanel = new JPanel();
+        mainPanel.setLayout(new GridBagLayout());
+        mainPanel.setBorder(new EmptyBorder(20,20,20,20));
+        
         JPanel analysisPanel = new JPanel();
         analysisPanel.setLayout(new GridBagLayout());
         analysisPanel.setBackground(Color.white);
+        analysisPanel.setBorder(loweredetched);
                     	
     	/* Text Labels for GUI */
-    	JLabel requestFileHeading = new JLabel("Please enter file name: ");
+    	JLabel requestFileHeading = new JLabel("Please enter file name or Browse: ");
     	requestFileHeading.setHorizontalAlignment(JLabel.RIGHT);
     	JLabel numLinesHeading = new JLabel("Number of Lines: ");
     	numLinesHeading.setHorizontalAlignment(JLabel.RIGHT);
     	JLabel numBlankLinesHeading = new JLabel("Number of Blank Lines: ");
+    	numBlankLinesHeading.setBorder(blackline);
     	numBlankLinesHeading.setHorizontalAlignment(JLabel.RIGHT);
     	JLabel numWordsHeading = new JLabel("Number of Words: ");
     	numWordsHeading.setHorizontalAlignment(JLabel.RIGHT);
@@ -97,8 +118,10 @@ public class textAnalyzer extends JFrame implements ActionListener
       	resetOption.addActionListener(this);
     	frame.setJMenuBar(menuBar);
     	
-    	/* Analyze button to accept input and begin analyzing */
+    	/* buttons to accept input and begin analyzing */
     	analyzeButton.addActionListener(this);
+    	analyzeButton.setBackground(Color.red);
+    	browseButton.addActionListener(this);
     	
         /* c is used for each component when added */
         GridBagConstraints c = new GridBagConstraints();
@@ -107,22 +130,29 @@ public class textAnalyzer extends JFrame implements ActionListener
         c.gridy = 0;
         c.ipadx = 5; // carries through for all
         c.ipady = 5; // carries through for all
-        frame.add(requestFileHeading, c);
+        mainPanel.add(requestFileHeading, c);
         
         c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 1;
         c.gridy = 0;
         c.insets = new Insets(10,10,10,10);
-        frame.add(fileNameField, c);
+        mainPanel.add(fileNameField, c);
         
         c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 2;
         c.gridy = 0;
-        frame.add(analyzeButton, c);
+        mainPanel.add(browseButton, c);
+        
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.gridx = 0;
+        c.gridy = 1;
+        c.gridwidth = 3;
+        mainPanel.add(analyzeButton, c);
         
         c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 0;
         c.gridy = 0;
+        c.gridwidth = 1;
         c.insets = new Insets(0,0,0,0);
         analysisPanel.add(numLinesHeading, c);
         
@@ -203,12 +233,15 @@ public class textAnalyzer extends JFrame implements ActionListener
         
         c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 0;
-        c.gridy = 1;
+        c.gridy = 2;
         c.gridwidth = 3;
-        frame.add(analysisPanel,c);
+        mainPanel.add(analysisPanel,c);
  
+        frame.add(mainPanel);
+        
         //Display the window.
         frame.pack();
+        frame.setLocationRelativeTo(null);
         frame.setVisible(true);
         
         analyzeButton.addActionListener(this);
@@ -222,15 +255,33 @@ public class textAnalyzer extends JFrame implements ActionListener
 	public void actionPerformed(ActionEvent eventName)
 	{
 		Object source = eventName.getSource();
+		int lines, blankLines, words, characters, spaces;
+		File file = null;
+		
+		if(source == browseButton)
+		{
+			int returnVal = fc.showOpenDialog(textAnalyzer.this);
+
+	        if (returnVal == JFileChooser.APPROVE_OPTION) 
+	        {
+	            file = fc.getSelectedFile();
+	            fileNameField.setText(file.getName());
+	        } 
+	        else 
+	        {
+	        	JOptionPane.showMessageDialog(null, "No File Selected");
+	        }
+
+		}
 		
 		if(source == analyzeButton)
 		{
-			String fileName = fileNameField.getText();
-		
-			int lines, blankLines, words, characters, spaces;
-				
-			File file = new File(fileName);
-
+			if(file == null)
+			{
+				String fileName = fileNameField.getText();
+				file = new File(fileName);
+			}
+			
 			if(file.exists() && file.canRead())
 			{
 				try
@@ -255,7 +306,6 @@ public class textAnalyzer extends JFrame implements ActionListener
 			{
 				JOptionPane.showMessageDialog(null,"File Name: " + file + ",  File Read Error\n","File Read Error",JOptionPane.ERROR_MESSAGE);
 			}
-	
 		}
 	
 		if(source == helpOption)
