@@ -245,6 +245,10 @@ public class textAnalyzer extends JFrame implements ActionListener
 					numCharactersLabel.setText("" + characters);
 					spaces = Spaces(file);
 					numSpacesLabel.setText("" + spaces);
+					
+					//----- RAUL --------------------------------
+					Output(lines, blankLines, words, characters, spaces);
+					//-------------------------------------------
 				}
 				catch (IOException errorMessage)
 				{
