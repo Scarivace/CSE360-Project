@@ -305,7 +305,7 @@ public class textAnalyzer extends JFrame implements ActionListener
 			}
 			
 			currentFile = new TextFile(file);
-			numLinesLabel.setText("" + currentFile.getLines());;
+			numLinesLabel.setText("" + currentFile.getLines());
 			numBlankLinesLabel.setText("" + currentFile.getBlanks());
 			numWordsLabel.setText("" + currentFile.getWords());
 			numCharactersLabel.setText("" + currentFile.getCharacters());
@@ -329,7 +329,16 @@ public class textAnalyzer extends JFrame implements ActionListener
 		
 		if(source == resetOption)
 		{
-			// Code to be determined
+			// Resets labels as blank text.
+			numLinesLabel.setText("");
+			numBlankLinesLabel.setText("");
+			numWordsLabel.setText("");
+			numCharactersLabel.setText("");
+			numSpacesLabel.setText("");
+			avgWordLengthLabel.setText("");
+			longestWordLabel.setText("");
+			mostFrequentLabel.setText("");
+			frequentWordCountLabel.setText("");
 		}
 	}
 	
