@@ -187,7 +187,7 @@ public class TextFile
 		Scanner fileScanner = new Scanner(file);
 		while(fileScanner.hasNextLine())
 		{
-			String line = fileScanner.nextLine();
+			fileScanner.nextLine();
 			num++;
 		}
 		fileScanner.close();
