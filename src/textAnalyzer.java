@@ -59,6 +59,9 @@ public class textAnalyzer extends JFrame implements ActionListener
 	/* Text Box to receive text file name */
 	JTextField fileNameField = new JTextField("",20);
 	
+	/* currentFile is the textfile object for current file */
+	TextFile currentFile;
+	
     public textAnalyzer() 
     {
     	int height = NUM_ROWS * ROW_HEIGHT;
@@ -267,7 +270,6 @@ public class textAnalyzer extends JFrame implements ActionListener
 	public void actionPerformed(ActionEvent eventName)
 	{
 		Object source = eventName.getSource();
-		TextFile currentFile;
 		int lines, blankLines, words, characters, spaces;
 		File file = null;
 		
@@ -291,32 +293,8 @@ public class textAnalyzer extends JFrame implements ActionListener
 		{
 			if(file == null)
 			{
-<<<<<<< HEAD
 				String fileName = fileNameField.getText();
 				file = new File(fileName);
-=======
-				try
-				{
-					lines = Lines(file);
-					numLinesLabel.setText("" + lines);;
-					blankLines = BlankLines(file);
-					numBlankLinesLabel.setText("" + blankLines);
-					words = Words(file);
-					numWordsLabel.setText("" + words);
-					characters = Characters(file);
-					numCharactersLabel.setText("" + characters);
-					spaces = Spaces(file);
-					numSpacesLabel.setText("" + spaces);
-					
-					//----- RAUL --------------------------------
-					Output(lines, blankLines, words, characters, spaces);
-					//-------------------------------------------
-				}
-				catch (IOException errorMessage)
-				{
-					JOptionPane.showMessageDialog(null,errorMessage.getMessage(),"IO Error",JOptionPane.ERROR_MESSAGE);
-				}
->>>>>>> branch 'master' of https://github.com/Scarivace/CSE360-Project.git
 			}
 			
 			currentFile = new TextFile(file);
@@ -341,112 +319,6 @@ public class textAnalyzer extends JFrame implements ActionListener
 		{
 			// Code to be determined
 		}
-	}
-<<<<<<< HEAD
-=======
-	
-	public static int Lines(File file) throws IOException
-	{
-		int num = 0;
-		Scanner fileScanner = new Scanner(file);
-		while(fileScanner.hasNextLine())
-		{
-			String line = fileScanner.nextLine();
-			num++;
-		}
-		fileScanner.close();
-		return num;
-	}
-
-	public static int BlankLines(File file) throws IOException
-	{
-		int num = 0;
-		Scanner fileScanner = new Scanner(file);
-		while(fileScanner.hasNextLine())
-		{
-			String line = fileScanner.nextLine();
-			boolean blank = true;
-			for(int i=0;i<line.length();i++)
-			{
-				if(line.charAt(i) != ' ')
-				{
-					blank = false;
-				}
-			}
-			if(blank)
-			{
-				num++;
-			}
-		}
-		fileScanner.close();
-		return num;
-	}
-	
-	public static int Words(File file) throws IOException 
-	{
-
-		FileReader rawFile = new FileReader(file);			// Opened file in file reader.
-		BufferedReader buffFile = new BufferedReader(rawFile);		// Opened new buffered reader.
-		String line = buffFile.readLine();				// First line copied to string.
-		boolean inWord = false;  					// Boolean control variable in a word is false by default.
-		int counter = 0;
-
-		while (line != null)   						// While line is not null.
-		{						
-			inWord = false; //set inWord to false at beginning of each line
-			for (int i = 0; i < line.length(); i++) // Iterates through the line char by char while 'i' is < string length.
-			{		
-      			if (line.charAt(i) == ' ' && inWord) // If current char is a space and in a word boolean is true.
-            	{		
-               		inWord = false;
-                }
-           		if (!inWord && line.charAt(i) != ' ') // If not in a word and char is not a space, in a word is set to true.
-           		{		
-           			inWord = true;
-               		counter++;				// Counter is incremented.
-           		}
-			}
-
-			line = buffFile.readLine();				// Next line sent to string, iterates the while loop.
-		}
-
-		buffFile.close();						// Close the reader.
-		return counter;							// Return the counter and exit the method.
-	}
-
-	public static int Characters(File file) throws FileNotFoundException
-	{
-		int numCharacters = 0;  // counter variable initialized to 0
-		Scanner fileScanner = new Scanner(file);
-		String line; // holds text read from file;
-		
-		while(fileScanner.hasNextLine())
-		{
-			line = fileScanner.nextLine();
-			numCharacters += line.length();
-		}
-		fileScanner.close();
-		return numCharacters;
-	}
-	
-	public static int Spaces(File file) throws FileNotFoundException
-	{
-		int num = 0;
-	    Scanner fileScanner = new Scanner(file);
-
-	    while(fileScanner.hasNextLine())
-	    {
-		    String line = fileScanner.nextLine();
-	    	for(int i=0;i<line.length();i++)
-	    	{
-	    		if(line.charAt(i) == ' ')
-	    		{
-	    			num++;
-				}
-	    	}
-	    }
-		fileScanner.close();
-		return num;
 	}
 	
 	/**
@@ -489,5 +361,4 @@ public class textAnalyzer extends JFrame implements ActionListener
 
 	}
 	
->>>>>>> branch 'master' of https://github.com/Scarivace/CSE360-Project.git
 }
