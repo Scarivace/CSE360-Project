@@ -329,25 +329,23 @@ public class textAnalyzer extends JFrame implements ActionListener
 	}
 	
 	/**
-		Method to create an output file from the data sent to the actionListiner class. DOUBLE PRINT ERROR!
+		Method to create and modify an output file.
 	*/
-	public static void Output(int lines, int blankLines, int words, int characters, int spaces) throws IOException {
+	public void Output(String stringy) throws IOException {
 		
 		File output = null;							 // Object Declarations.
 		FileWriter scribe = null;
 		BufferedWriter writer = null;
 
 		String fileName = "Output.txt";						 // String Declarations.
-		String content = lines + " " + blankLines + " " + words + " " + characters + " " + spaces + "\n";
+		String content = stringy + "|";
 		
 		try {
 			output = new File(fileName);
 			
 			if (!output.exists()) {						 // If the file doesn't exist then create it.
 				output.createNewFile();
-			
 				scribe = new FileWriter(output.getAbsoluteFile()); 	 // THE SOURCE OF ERRORS.
-
 			}
 			else {
 				scribe = new FileWriter(output.getAbsoluteFile(), true); // THE SOURCE OF ERRORS.
@@ -356,14 +354,19 @@ public class textAnalyzer extends JFrame implements ActionListener
 			writer = new BufferedWriter(scribe);
 			
 			writer.write(content);
-			
-			writer.close();
-			scribe.close();
-		
-		} catch (IOException e) {
-			
+			writer.newLine();
+			writer.flush();		
+		}
+		catch (IOException e) {	
 			e.printStackTrace();						 // To find out where I went wrong.
-			
+		}
+		finally {								 // Always close.
+			if (writer != null) {
+				writer.close();
+			}
+			if (scribe != null) {
+				scribe.close();
+			}
 		}
 
 	}
