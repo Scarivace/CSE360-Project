@@ -7,6 +7,7 @@ import java.io.*;
 
 public class textAnalyzer extends JFrame implements ActionListener
 {
+	private static final long serialVersionUID = 1L;
 	/* Constants for width of window and row height */
 	final static int WIDTH = 2000;
 	final static int ROW_HEIGHT = 150;
@@ -265,8 +266,7 @@ public class textAnalyzer extends JFrame implements ActionListener
         frame.pack();
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
-        
-        analyzeButton.addActionListener(this);
+
     }	
 
 	public static void main(String[] args) 
@@ -315,6 +315,7 @@ public class textAnalyzer extends JFrame implements ActionListener
 			mostFrequentLabel.setText(currentFile.getMostFrequent());
 			frequentWordCountLabel.setText("" + currentFile.getFrequentCount());
 			
+			Output(currentFile.toString());
 		}
 	
 		if(source == helpOption)
