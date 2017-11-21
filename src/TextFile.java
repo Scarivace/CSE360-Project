@@ -40,6 +40,7 @@ public class TextFile
 	public TextFile(String name) // Overloaded constructor - just filename
 	{
 		filename = name;
+		dateAnalyzed = "00/00/0000";
 		
 		File file = new File(name);
 
@@ -74,6 +75,7 @@ public class TextFile
 	public TextFile(File file) // Overloaded constructor - just file
 	{
 		filename = file.getName();
+		dateAnalyzed = "00/00/0000";
 
 		if(file.exists() && file.canRead())
 		{
@@ -103,9 +105,10 @@ public class TextFile
 		
 	}
 	
-	public TextFile(String name, int lines, int blanks, int words, int characters, int spaces) // overloaded constructor receives all numbers
+	public TextFile(String name, String date, int lines, int blanks, int words, int characters, int spaces) // overloaded constructor receives all numbers
 	{
 		filename = name;
+		dateAnalyzed = date;
 		numLines = lines;
 		numBlankLines = blanks;
 		numWords = words;
@@ -121,6 +124,11 @@ public class TextFile
 	public String getFilename()
 	{
 		return filename;
+	}
+	
+	public String getDateAnalyzed()
+	{
+		return dateAnalyzed;
 	}
 	
 	public String getDate()
