@@ -3,7 +3,6 @@ import javax.swing.border.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
-import java.util.Random;
 import java.io.*;
 
 public class textAnalyzer extends JFrame implements ActionListener
@@ -37,6 +36,9 @@ public class textAnalyzer extends JFrame implements ActionListener
 	JMenu menu = new JMenu("Menu");
 	JMenuItem helpOption = new JMenuItem("Help");
 	JMenuItem resetOption = new JMenuItem("RESET");
+	
+	/* Tabs for History and Current File */
+	JTabbedPane tabs = new JTabbedPane();
 	
 	/* Labels for calculated data */
 	JLabel numLinesLabel = new JLabel(" ");
@@ -83,14 +85,16 @@ public class textAnalyzer extends JFrame implements ActionListener
         frame.setLayout(new GridBagLayout());
         
         /* Panels for sections of analyzer */
-        JPanel mainPanel = new JPanel();
-        mainPanel.setLayout(new GridBagLayout());
-        mainPanel.setBorder(new EmptyBorder(20,20,20,20));
+        JPanel currentPanel = new JPanel();
+        currentPanel.setLayout(new GridBagLayout());
+        currentPanel.setBorder(new EmptyBorder(20,20,20,20));
         
         JPanel analysisPanel = new JPanel();
         analysisPanel.setLayout(new GridBagLayout());
         analysisPanel.setBackground(Color.white);
         analysisPanel.setBorder(loweredetched);
+        
+        JPanel historyPanel = new JPanel();
                     	
     	/* Text Labels for GUI */
     	JLabel requestFileHeading = new JLabel("Please enter file name or Browse: ");
@@ -135,24 +139,24 @@ public class textAnalyzer extends JFrame implements ActionListener
         c.gridy = 0;
         c.ipadx = 5; // carries through for all
         c.ipady = 5; // carries through for all
-        mainPanel.add(requestFileHeading, c);
+        currentPanel.add(requestFileHeading, c);
         
         c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 1;
         c.gridy = 0;
         c.insets = new Insets(10,10,10,10);
-        mainPanel.add(fileNameField, c);
+        currentPanel.add(fileNameField, c);
         
         c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 2;
         c.gridy = 0;
-        mainPanel.add(browseButton, c);
+        currentPanel.add(browseButton, c);
         
         c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 0;
         c.gridy = 1;
         c.gridwidth = 3;
-        mainPanel.add(analyzeButton, c);
+        currentPanel.add(analyzeButton, c);
         
         c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 0;
@@ -250,9 +254,12 @@ public class textAnalyzer extends JFrame implements ActionListener
         c.gridx = 0;
         c.gridy = 2;
         c.gridwidth = 3;
-        mainPanel.add(analysisPanel,c);
+        currentPanel.add(analysisPanel,c);
+        
+        tabs.addTab("Current File",currentPanel);
+        tabs.addTab("History Pane", historyPanel);
  
-        frame.add(mainPanel);
+        frame.add(tabs);
         
         //Display the window.
         frame.pack();
