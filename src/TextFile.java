@@ -17,6 +17,7 @@ public class TextFile
 	private int numWords;
 	private int numCharacters;
 	private int numSpaces;
+	private int avgWordLength;
 	private String longestWord;
 	private String frequentWord;
 	private int frequentWordCount;
@@ -30,6 +31,7 @@ public class TextFile
 		numWords = 0;
 		numCharacters = 0;
 		numSpaces = 0;
+		avgWordLength = 0;
 		longestWord = "";
 		frequentWord = "";
 		frequentWordCount = 0;
@@ -50,6 +52,10 @@ public class TextFile
 				numWords = Words(file);
 				numCharacters = Characters(file);
 				numSpaces = Spaces(file);
+				avgWordLength = -1;
+				longestWord = "notdone";
+				frequentWord = "notdone";
+				frequentWordCount = -1;
 				
 			}
 			catch (IOException errorMessage)
@@ -78,6 +84,10 @@ public class TextFile
 				numWords = Words(file);
 				numCharacters = Characters(file);
 				numSpaces = Spaces(file);
+				avgWordLength = -1;
+				longestWord = "notdone";
+				frequentWord = "notdone";
+				frequentWordCount = -1;
 				
 			}
 			catch (IOException errorMessage)
@@ -101,6 +111,10 @@ public class TextFile
 		numWords = words;
 		numCharacters = characters;
 		numSpaces = spaces;
+		avgWordLength = -1;
+		longestWord = "notdone";
+		frequentWord = "notdone";
+		frequentWordCount = -1;
 	}
 	
 	// Get functions
@@ -137,6 +151,11 @@ public class TextFile
 	public int getSpaces()
 	{
 		return numSpaces;
+	}
+	
+	public int getAvgLength()
+	{
+		return avgWordLength;
 	}
 	
 	public String getLongest()

@@ -47,6 +47,7 @@ public class textAnalyzer extends JFrame implements ActionListener
 	JLabel avgWordLengthLabel = new JLabel(" ");
 	JLabel longestWordLabel = new JLabel(" ");
 	JLabel mostFrequentLabel = new JLabel(" ");
+	JLabel frequentWordCountLabel = new JLabel(" ");
 	
 	/* File Chooser */
 	final JFileChooser fc = new JFileChooser();
@@ -94,7 +95,6 @@ public class textAnalyzer extends JFrame implements ActionListener
     	JLabel numLinesHeading = new JLabel("Number of Lines: ");
     	numLinesHeading.setHorizontalAlignment(JLabel.RIGHT);
     	JLabel numBlankLinesHeading = new JLabel("Number of Blank Lines: ");
-    	numBlankLinesHeading.setBorder(blackline);
     	numBlankLinesHeading.setHorizontalAlignment(JLabel.RIGHT);
     	JLabel numWordsHeading = new JLabel("Number of Words: ");
     	numWordsHeading.setHorizontalAlignment(JLabel.RIGHT);
@@ -108,6 +108,8 @@ public class textAnalyzer extends JFrame implements ActionListener
     	longestWordHeading.setHorizontalAlignment(JLabel.RIGHT);
     	JLabel mostFrequentWordHeading = new JLabel("Most Frequent Word in File: ");
     	mostFrequentWordHeading.setHorizontalAlignment(JLabel.RIGHT);
+    	JLabel frequentWordCountHeading = new JLabel("Count of Most Frequent Word: ");
+    	frequentWordCountHeading.setHorizontalAlignment(JLabel.RIGHT);
     	
     	/* Setup Menu Bar */
     	menuBar.add(Box.createHorizontalGlue());
@@ -233,6 +235,16 @@ public class textAnalyzer extends JFrame implements ActionListener
         
         c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 0;
+        c.gridy = 8;
+        analysisPanel.add(frequentWordCountHeading, c);
+        
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.gridx = 1;
+        c.gridy = 8;
+        analysisPanel.add(frequentWordCountLabel, c);
+        
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.gridx = 0;
         c.gridy = 2;
         c.gridwidth = 3;
         mainPanel.add(analysisPanel,c);
@@ -255,6 +267,7 @@ public class textAnalyzer extends JFrame implements ActionListener
 	public void actionPerformed(ActionEvent eventName)
 	{
 		Object source = eventName.getSource();
+		TextFile currentFile;
 		int lines, blankLines, words, characters, spaces;
 		File file = null;
 		
@@ -282,30 +295,17 @@ public class textAnalyzer extends JFrame implements ActionListener
 				file = new File(fileName);
 			}
 			
-			if(file.exists() && file.canRead())
-			{
-				try
-				{
-					lines = Lines(file);
-					numLinesLabel.setText("" + lines);;
-					blankLines = BlankLines(file);
-					numBlankLinesLabel.setText("" + blankLines);
-					words = Words(file);
-					numWordsLabel.setText("" + words);
-					characters = Characters(file);
-					numCharactersLabel.setText("" + characters);
-					spaces = Spaces(file);
-					numSpacesLabel.setText("" + spaces);
-				}
-				catch (IOException errorMessage)
-				{
-					JOptionPane.showMessageDialog(null,errorMessage.getMessage(),"IO Error",JOptionPane.ERROR_MESSAGE);
-				}
-			}
-			else
-			{
-				JOptionPane.showMessageDialog(null,"File Name: " + file + ",  File Read Error\n","File Read Error",JOptionPane.ERROR_MESSAGE);
-			}
+			currentFile = new TextFile(file);
+			numLinesLabel.setText("" + currentFile.getLines());;
+			numBlankLinesLabel.setText("" + currentFile.getBlanks());
+			numWordsLabel.setText("" + currentFile.getWords());
+			numCharactersLabel.setText("" + currentFile.getCharacters());
+			numSpacesLabel.setText("" + currentFile.getSpaces());
+			avgWordLengthLabel.setText("" + currentFile.getAvgLength());
+			longestWordLabel.setText(currentFile.getLongest());
+			mostFrequentLabel.setText(currentFile.getMostFrequent());
+			frequentWordCountLabel.setText("" + currentFile.getFrequentCount());
+			
 		}
 	
 		if(source == helpOption)
@@ -318,109 +318,4 @@ public class textAnalyzer extends JFrame implements ActionListener
 			// Code to be determined
 		}
 	}
-	
-	public static int Lines(File file) throws IOException
-	{
-		int num = 0;
-		Scanner fileScanner = new Scanner(file);
-		while(fileScanner.hasNextLine())
-		{
-			String line = fileScanner.nextLine();
-			num++;
-		}
-		fileScanner.close();
-		return num;
-	}
-
-	public static int BlankLines(File file) throws IOException
-	{
-		int num = 0;
-		Scanner fileScanner = new Scanner(file);
-		while(fileScanner.hasNextLine())
-		{
-			String line = fileScanner.nextLine();
-			boolean blank = true;
-			for(int i=0;i<line.length();i++)
-			{
-				if(line.charAt(i) != ' ')
-				{
-					blank = false;
-				}
-			}
-			if(blank)
-			{
-				num++;
-			}
-		}
-		fileScanner.close();
-		return num;
-	}
-	
-	public static int Words(File file) throws IOException 
-	{
-
-		FileReader rawFile = new FileReader(file);			// Opened file in file reader.
-		BufferedReader buffFile = new BufferedReader(rawFile);		// Opened new buffered reader.
-		String line = buffFile.readLine();				// First line copied to string.
-		boolean inWord = false;  					// Boolean control variable in a word is false by default.
-		int counter = 0;
-
-		while (line != null)   						// While line is not null.
-		{						
-			inWord = false; //set inWord to false at beginning of each line
-			for (int i = 0; i < line.length(); i++) // Iterates through the line char by char while 'i' is < string length.
-			{		
-      			if (line.charAt(i) == ' ' && inWord) // If current char is a space and in a word boolean is true.
-            	{		
-               		inWord = false;
-                }
-           		if (!inWord && line.charAt(i) != ' ') // If not in a word and char is not a space, in a word is set to true.
-           		{		
-           			inWord = true;
-               		counter++;				// Counter is incremented.
-           		}
-			}
-
-			line = buffFile.readLine();				// Next line sent to string, iterates the while loop.
-		}
-
-		buffFile.close();						// Close the reader.
-		return counter;							// Return the counter and exit the method.
-	}
-
-	public static int Characters(File file) throws FileNotFoundException
-	{
-		int numCharacters = 0;  // counter variable initialized to 0
-		Scanner fileScanner = new Scanner(file);
-		String line; // holds text read from file;
-		
-		while(fileScanner.hasNextLine())
-		{
-			line = fileScanner.nextLine();
-			numCharacters += line.length();
-		}
-		fileScanner.close();
-		return numCharacters;
-	}
-	
-	public static int Spaces(File file) throws FileNotFoundException
-	{
-		int num = 0;
-	    Scanner fileScanner = new Scanner(file);
-
-	    while(fileScanner.hasNextLine())
-	    {
-		    String line = fileScanner.nextLine();
-	    	for(int i=0;i<line.length();i++)
-	    	{
-	    		if(line.charAt(i) == ' ')
-	    		{
-	    			num++;
-				}
-	    	}
-	    }
-		fileScanner.close();
-		return num;
-	}
-	
 }
