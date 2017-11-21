@@ -315,7 +315,11 @@ public class textAnalyzer extends JFrame implements ActionListener
 			mostFrequentLabel.setText(currentFile.getMostFrequent());
 			frequentWordCountLabel.setText("" + currentFile.getFrequentCount());
 			
-			Output(currentFile.toString());
+			try {						// Method call to toString via Output method call.
+				Output(currentFile.toString());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	
 		if(source == helpOption)
