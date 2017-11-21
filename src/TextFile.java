@@ -1,7 +1,9 @@
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
 
@@ -295,5 +297,43 @@ public class TextFile
 		returnString = String.format("%-15s %s %5d %5d %5d %5d %5d %15s %15s %5d", filename, dateAnalyzed, numLines, numBlankLines, numWords, numCharacters, numSpaces, longestWord, frequentWord, frequentWordCount);
 		
 		return returnString;
+	}
+	
+	public void Output(String stringy) throws IOException {
+		File output = null;
+		FileWriter scribe = null;
+		BufferedWriter writer = null;
+		
+		String fileName = "Output.txt";
+		String content = stringy + "|";
+		
+		try {
+			output = new File(fileName);
+			
+			if (!output.exists()) {
+				output.createNewFile();
+				scribe = new FileWriter(output.getAbsoluteFile());
+			}
+			else {
+				scribe = new FileWriter(output.getAbsoluteFile(), true);
+			}
+			
+			writer = new BufferedWriter(scribe);
+			
+			writer.write(content);
+			writer.newLine();
+			writer.flush();
+		}
+		catch (IOException e) {
+			e.printStackTrace();	
+		}
+		finally {
+			if (writer != null) {
+				writer.close();
+			}
+			if (scribe != null) {
+				scribe.close();
+			}
+		}
 	}
 }
