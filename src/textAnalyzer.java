@@ -265,8 +265,6 @@ public class textAnalyzer extends JFrame implements ActionListener
         frame.pack();
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
-        
-        analyzeButton.addActionListener(this);
     }	
 
 	public static void main(String[] args) 
