@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
 import java.io.*;
+import java.text.DecimalFormat;
 
 public class textAnalyzer extends JFrame implements ActionListener
 {
@@ -505,6 +506,7 @@ public class textAnalyzer extends JFrame implements ActionListener
 	public void calcAverages()
 	{
 		int totalLines=0, totalBlanks=0, totalWords=0, totalCharacters=0, totalSpaces=0, fileCount=0;
+		DecimalFormat num = new DecimalFormat("#,###.00");
 		
 		if(currentFile != null)
 		{
@@ -532,12 +534,11 @@ public class textAnalyzer extends JFrame implements ActionListener
 			averageCharacters = (double)totalCharacters / fileCount;
 			averageSpaces = (double)totalSpaces / fileCount;
 		}
-			
-		avgLinesLabel.setText("" + averageLines);
-		avgBlanksLabel.setText("" + averageBlanks);
-		avgWordsLabel.setText("" + averageWords);
-		avgCharactersLabel.setText("" + averageCharacters);
-		avgSpacesLabel.setText("" + averageSpaces);
-		
+
+		avgLinesLabel.setText("" + num.format(averageLines));
+		avgBlanksLabel.setText("" + num.format(averageBlanks));
+		avgWordsLabel.setText("" + num.format(averageWords));
+		avgCharactersLabel.setText("" + num.format(averageCharacters));
+		avgSpacesLabel.setText("" + num.format(averageSpaces));
 	}
 }
