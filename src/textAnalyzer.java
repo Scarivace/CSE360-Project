@@ -341,6 +341,7 @@ public class textAnalyzer extends JFrame implements ActionListener
 
     }	
 
+	@SuppressWarnings("unused")
 	public static void main(String[] args) 
 	{
 		textAnalyzer newAnalysis = new textAnalyzer();
