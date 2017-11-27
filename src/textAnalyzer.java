@@ -7,8 +7,9 @@ import java.io.*;
 
 public class textAnalyzer extends JFrame implements ActionListener
 {
+	private static final long serialVersionUID = 1L;
 	/* Constants for width of window and row height */
-	final static int WIDTH = 2000;
+	final static int WIDTH = 3000;
 	final static int ROW_HEIGHT = 150;
 	final static int NUM_ROWS = 10;
 
@@ -31,6 +32,8 @@ public class textAnalyzer extends JFrame implements ActionListener
 			"Averages are also kept across files and displayed as indicated.\n\n" +
 			"RESET will clear all history and the current file.";
 	
+	final String historyHeader = String.format("%-15s %-15s %-5s %-5s %-5s %-5s %-5s %-5s %-15s %-15s %-5s ", "File", "Date", "L", "B", "W", "Ch", "Sp", "Avg", "Long", "Freq", "#");
+	
 	/* Menu Bar */
 	JMenuBar menuBar = new JMenuBar();
 	JMenu menu = new JMenu("Menu");
@@ -40,7 +43,7 @@ public class textAnalyzer extends JFrame implements ActionListener
 	/* Tabs for History and Current File */
 	JTabbedPane tabs = new JTabbedPane();
 	
-	/* Labels for calculated data */
+	/* Labels for GUI */
 	JLabel numLinesLabel = new JLabel(" ");
 	JLabel numBlankLinesLabel = new JLabel(" ");
 	JLabel numWordsLabel = new JLabel(" ");
@@ -50,6 +53,37 @@ public class textAnalyzer extends JFrame implements ActionListener
 	JLabel longestWordLabel = new JLabel(" ");
 	JLabel mostFrequentLabel = new JLabel(" ");
 	JLabel frequentWordCountLabel = new JLabel(" ");
+	
+	JLabel requestFileHeading = new JLabel("Please enter file name or Browse: ");
+	JLabel numLinesHeading = new JLabel("Number of Lines: ");
+	JLabel numBlankLinesHeading = new JLabel("Number of Blank Lines: ");
+	JLabel numWordsHeading = new JLabel("Number of Words: ");
+	JLabel numCharactersHeading = new JLabel("Number of Characters: ");
+	JLabel numSpacesHeading = new JLabel("Number of Spaces: ");
+	JLabel avgWordLengthHeading = new JLabel("Average Word Length: ");
+	JLabel longestWordHeading = new JLabel("Longest Word: ");
+	JLabel mostFrequentWordHeading = new JLabel("Most Frequent Word in File: ");
+	JLabel frequentWordCountHeading = new JLabel("Count of Most Frequent Word: ");
+	
+	JLabel averagesHeading = new JLabel("Averages:");
+	JLabel avgLinesHeading = new JLabel("Lines: ");
+	JLabel avgLinesLabel = new JLabel();
+	JLabel avgBlanksHeading = new JLabel("Blanks:  ");
+	JLabel avgBlanksLabel = new JLabel();
+	JLabel avgWordsHeading = new JLabel("Words: ");
+	JLabel avgWordsLabel = new JLabel();
+	JLabel avgCharactersHeading = new JLabel("Char: ");
+	JLabel avgCharactersLabel = new JLabel();
+	JLabel avgSpacesHeading = new JLabel("Spaces: ");
+	JLabel avgSpacesLabel = new JLabel();
+
+	/* Panels and Frame */
+    JFrame frame = new JFrame("Text Analyzer");
+    JPanel currentPanel = new JPanel();
+    JPanel analysisPanel = new JPanel();
+    JPanel historyPanel = new JPanel();
+    JTextArea displayHistory = new JTextArea("",10,50);
+    JScrollPane scrollHistory = new JScrollPane();
 	
 	/* File Chooser */
 	final JFileChooser fc = new JFileChooser();
@@ -63,6 +97,10 @@ public class textAnalyzer extends JFrame implements ActionListener
 	
 	/* currentFile is the textfile object for current file */
 	TextFile currentFile;
+	
+	LinkedList<TextFile> fileList = new LinkedList<TextFile>();
+	
+	double averageLines, averageBlanks, averageWords, averageCharacters, averageSpaces;
 	
     public textAnalyzer() 
     {
@@ -78,45 +116,41 @@ public class textAnalyzer extends JFrame implements ActionListener
     	loweredbevel = BorderFactory.createLoweredBevelBorder();	
     	empty = BorderFactory.createEmptyBorder();
     	
-        //Create and set up the window.
-        JFrame frame = new JFrame("Text Analyzer");
+        /* set up the main frame */
         frame.setSize(new Dimension(WIDTH,height));
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLayout(new GridBagLayout());
         
         /* Panels for sections of analyzer */
-        JPanel currentPanel = new JPanel();
         currentPanel.setLayout(new GridBagLayout());
-        currentPanel.setBorder(new EmptyBorder(20,20,20,20));
+        currentPanel.setBorder(new EmptyBorder(0,20,20,20));
         
-        JPanel analysisPanel = new JPanel();
         analysisPanel.setLayout(new GridBagLayout());
         analysisPanel.setBackground(Color.white);
         analysisPanel.setBorder(loweredetched);
         
-        JPanel historyPanel = new JPanel();
-                    	
-    	/* Text Labels for GUI */
-    	JLabel requestFileHeading = new JLabel("Please enter file name or Browse: ");
+        historyPanel.setLayout(new GridBagLayout());
+        
+        displayHistory.setBorder(loweredetched);
+        
+    	/* Alight Text Labels for GUI */
     	requestFileHeading.setHorizontalAlignment(JLabel.RIGHT);
-    	JLabel numLinesHeading = new JLabel("Number of Lines: ");
     	numLinesHeading.setHorizontalAlignment(JLabel.RIGHT);
-    	JLabel numBlankLinesHeading = new JLabel("Number of Blank Lines: ");
     	numBlankLinesHeading.setHorizontalAlignment(JLabel.RIGHT);
-    	JLabel numWordsHeading = new JLabel("Number of Words: ");
     	numWordsHeading.setHorizontalAlignment(JLabel.RIGHT);
-    	JLabel numCharactersHeading = new JLabel("Number of Characters: ");
     	numCharactersHeading.setHorizontalAlignment(JLabel.RIGHT);
-    	JLabel numSpacesHeading = new JLabel("Number of Spaces: ");
     	numSpacesHeading.setHorizontalAlignment(JLabel.RIGHT);
-    	JLabel avgWordLengthHeading = new JLabel("Average Word Length: ");
     	avgWordLengthHeading.setHorizontalAlignment(JLabel.RIGHT);
-    	JLabel longestWordHeading = new JLabel("Longest Word: ");
     	longestWordHeading.setHorizontalAlignment(JLabel.RIGHT);
-    	JLabel mostFrequentWordHeading = new JLabel("Most Frequent Word in File: ");
     	mostFrequentWordHeading.setHorizontalAlignment(JLabel.RIGHT);
-    	JLabel frequentWordCountHeading = new JLabel("Count of Most Frequent Word: ");
     	frequentWordCountHeading.setHorizontalAlignment(JLabel.RIGHT);
+    	
+    	averagesHeading.setHorizontalAlignment(JLabel.CENTER);
+    	avgLinesHeading.setHorizontalAlignment(JLabel.RIGHT);
+    	avgBlanksHeading.setHorizontalAlignment(JLabel.RIGHT);
+    	avgWordsHeading.setHorizontalAlignment(JLabel.RIGHT);
+    	avgCharactersHeading.setHorizontalAlignment(JLabel.RIGHT);
+    	avgSpacesHeading.setHorizontalAlignment(JLabel.RIGHT);
     	
     	/* Setup Menu Bar */
     	menuBar.add(Box.createHorizontalGlue());
@@ -141,123 +175,162 @@ public class textAnalyzer extends JFrame implements ActionListener
         c.ipady = 5; // carries through for all
         currentPanel.add(requestFileHeading, c);
         
-        c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 1;
         c.gridy = 0;
         c.insets = new Insets(10,10,10,10);
         currentPanel.add(fileNameField, c);
         
-        c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 2;
         c.gridy = 0;
         currentPanel.add(browseButton, c);
         
-        c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 0;
         c.gridy = 1;
         c.gridwidth = 3;
         currentPanel.add(analyzeButton, c);
         
-        c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 0;
         c.gridy = 0;
         c.gridwidth = 1;
         c.insets = new Insets(0,0,0,0);
         analysisPanel.add(numLinesHeading, c);
         
-        c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 1;
         c.gridy = 0;
         analysisPanel.add(numLinesLabel, c);
         
-        c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 0;
         c.gridy = 1;
         analysisPanel.add(numBlankLinesHeading, c);
         
-        c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 1;
         c.gridy = 1;
         analysisPanel.add(numBlankLinesLabel, c);
         
-        c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 0;
         c.gridy = 2;
         analysisPanel.add(numWordsHeading, c);
         
-        c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 1;
         c.gridy = 2;
         analysisPanel.add(numWordsLabel, c);
         
-        c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 0;
         c.gridy = 3;
         analysisPanel.add(numCharactersHeading, c);
         
-        c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 1;
         c.gridy = 3;
         analysisPanel.add(numCharactersLabel, c);
         
-        c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 0;
         c.gridy = 4;
         analysisPanel.add(numSpacesHeading, c);
         
-        c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 1;
         c.gridy = 4;
         analysisPanel.add(numSpacesLabel, c);
         
-        c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 0;
         c.gridy = 5;
         analysisPanel.add(avgWordLengthHeading, c);
         
-        c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 1;
         c.gridy = 5;
         analysisPanel.add(avgWordLengthLabel, c);
         
-        c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 0;
         c.gridy = 6;
         analysisPanel.add(longestWordHeading, c);
         
-        c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 1;
         c.gridy = 6;
         analysisPanel.add(longestWordLabel, c);
         
-        c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 0;
         c.gridy = 7;
         analysisPanel.add(mostFrequentWordHeading, c);
         
-        c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 1;
         c.gridy = 7;
         analysisPanel.add(mostFrequentLabel, c);
         
-        c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 0;
         c.gridy = 8;
         analysisPanel.add(frequentWordCountHeading, c);
         
-        c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 1;
         c.gridy = 8;
         analysisPanel.add(frequentWordCountLabel, c);
         
-        c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 0;
         c.gridy = 2;
         c.gridwidth = 3;
         currentPanel.add(analysisPanel,c);
         
+        displayHistory.setFont(new Font("courier", Font.PLAIN, 12));
+        displayHistory.append(historyHeader + "\n");
+        readHistory();
+        for(int i = 0; i < fileList.size(); i ++)
+        {
+        	displayHistory.append(fileList.get(i).toString() + "\n");
+        }
+        
+        c.gridx = 0;
+        c.gridy = 0;
+        c.gridwidth = 10;
+        historyPanel.add(scrollHistory.add(displayHistory),c);
+        
+        c.gridx = 0;
+        c.gridy = 1;
+        c.gridwidth = 10;
+        historyPanel.add(averagesHeading, c);
+        
+        calcAverages();
+        
+        c.gridx = 0;
+        c.gridy = 2;
+        c.gridwidth = 1;
+        historyPanel.add(avgLinesHeading, c);
+
+        c.gridx = 1;
+        c.gridy = 2;
+        historyPanel.add(avgLinesLabel, c);
+        
+        c.gridx = 2;
+        c.gridy = 2;
+        historyPanel.add(avgBlanksHeading, c);
+
+        c.gridx = 3;
+        c.gridy = 2;
+        historyPanel.add(avgBlanksLabel, c);
+
+        c.gridx = 4;
+        c.gridy = 2;
+        historyPanel.add(avgWordsHeading, c);
+
+        c.gridx = 5;
+        c.gridy = 2;
+        historyPanel.add(avgWordsLabel, c);
+        
+        c.gridx = 6;
+        c.gridy = 2;
+        historyPanel.add(avgCharactersHeading, c);
+
+        c.gridx = 7;
+        c.gridy = 2;
+        historyPanel.add(avgCharactersLabel, c);
+        
+        c.gridx = 8;
+        c.gridy = 2;
+        historyPanel.add(avgSpacesHeading, c);
+
+        c.gridx = 9;
+        c.gridy = 2;
+        historyPanel.add(avgSpacesLabel, c);
+        
         tabs.addTab("Current File",currentPanel);
-        tabs.addTab("History Pane", historyPanel);
+        tabs.addTab("Analysis History", historyPanel);
  
         frame.add(tabs);
         
@@ -265,6 +338,7 @@ public class textAnalyzer extends JFrame implements ActionListener
         frame.pack();
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
+
     }	
 
 	public static void main(String[] args) 
@@ -303,7 +377,7 @@ public class textAnalyzer extends JFrame implements ActionListener
 			}
 			
 			currentFile = new TextFile(file);
-			numLinesLabel.setText("" + currentFile.getLines());;
+			numLinesLabel.setText("" + currentFile.getLines());
 			numBlankLinesLabel.setText("" + currentFile.getBlanks());
 			numWordsLabel.setText("" + currentFile.getWords());
 			numCharactersLabel.setText("" + currentFile.getCharacters());
@@ -313,6 +387,15 @@ public class textAnalyzer extends JFrame implements ActionListener
 			mostFrequentLabel.setText(currentFile.getMostFrequent());
 			frequentWordCountLabel.setText("" + currentFile.getFrequentCount());
 			
+			displayHistory.append(currentFile.toString() + "\n");
+			calcAverages();
+			
+			try 
+			{						// Method call to toString via Output method call.
+				writeOutput(currentFile.toString());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	
 		if(source == helpOption)
@@ -322,48 +405,138 @@ public class textAnalyzer extends JFrame implements ActionListener
 		
 		if(source == resetOption)
 		{
-			// Code to be determined
+			// Resets labels as blank text.
+			numLinesLabel.setText("");
+			numBlankLinesLabel.setText("");
+			numWordsLabel.setText("");
+			numCharactersLabel.setText("");
+			numSpacesLabel.setText("");
+			avgWordLengthLabel.setText("");
+			longestWordLabel.setText("");
+			mostFrequentLabel.setText("");
+			frequentWordCountLabel.setText("");
 		}
 	}
 	
 	/**
-		Method to create an output file from the data sent to the actionListiner class. DOUBLE PRINT ERROR!
+		Method to create and modify an output file.
 	*/
-	public static void Output(int lines, int blankLines, int words, int characters, int spaces) throws IOException {
-		
+	public void writeOutput(String stringy) throws IOException 
+	{
 		File output = null;							 // Object Declarations.
 		FileWriter scribe = null;
 		BufferedWriter writer = null;
 
 		String fileName = "Output.txt";						 // String Declarations.
-		String content = lines + " " + blankLines + " " + words + " " + characters + " " + spaces + "\n";
+		String content = stringy;
 		
 		try {
 			output = new File(fileName);
 			
 			if (!output.exists()) {						 // If the file doesn't exist then create it.
 				output.createNewFile();
-			
 				scribe = new FileWriter(output.getAbsoluteFile()); 	 // THE SOURCE OF ERRORS.
-
 			}
-			else {
+			else 
+			{
 				scribe = new FileWriter(output.getAbsoluteFile(), true); // THE SOURCE OF ERRORS.
 			}
 			
 			writer = new BufferedWriter(scribe);
 			
 			writer.write(content);
-			
-			writer.close();
-			scribe.close();
-		
-		} catch (IOException e) {
-			
+			writer.newLine();
+			writer.flush();		
+		}
+		catch (IOException e) {	
 			e.printStackTrace();						 // To find out where I went wrong.
-			
+		}
+		finally {								 // Always close.
+			if (writer != null) {
+				writer.close();
+			}
+			if (scribe != null) {
+				scribe.close();
+			}
 		}
 
 	}
 	
+	/* readHistory will read the output file to create/display the history of analyzed files 
+	 * Assumes Output.txt exists and is correctly formatted/was generated by this program */
+	public void readHistory()
+	{
+		String filename, dateAnalyzed, longestWord, frequentWord;
+		int lines,blanks,words,characters,spaces,averageWord,freqCount;
+		File infile = new File("Output.txt");
+
+		if(infile.exists() && infile.canRead())
+		{
+			try
+			{
+				Scanner fileScanner = new Scanner(infile);
+				fileList = new LinkedList<TextFile>();
+				while(fileScanner.hasNext())
+				{
+					filename = fileScanner.next();
+					dateAnalyzed = fileScanner.next();
+					lines = fileScanner.nextInt();
+					blanks = fileScanner.nextInt();
+					words = fileScanner.nextInt();
+					characters = fileScanner.nextInt();
+					spaces = fileScanner.nextInt();
+					averageWord = fileScanner.nextInt();
+					longestWord = fileScanner.next();
+					frequentWord = fileScanner.next();
+					freqCount = fileScanner.nextInt();
+				
+					fileList.add(new TextFile(filename, dateAnalyzed, lines, blanks, words, characters,spaces,averageWord,longestWord,frequentWord,freqCount));
+				}
+				fileScanner.close();
+			}
+			catch (IOException errorMessage)
+			{
+				JOptionPane.showMessageDialog(null,errorMessage.getMessage(),"IO Error",JOptionPane.ERROR_MESSAGE);
+			}
+		}
+	}
+	
+	public void calcAverages()
+	{
+		int totalLines=0, totalBlanks=0, totalWords=0, totalCharacters=0, totalSpaces=0, fileCount=0;
+		
+		if(currentFile != null)
+		{
+			totalLines += currentFile.getLines();
+			totalBlanks += currentFile.getBlanks();
+			totalWords += currentFile.getWords();
+			totalCharacters += currentFile.getCharacters();
+			totalSpaces += currentFile.getSpaces();
+			fileCount ++;
+		}
+		for(int i = 0; i < fileList.size(); i ++)
+		{
+			totalLines += fileList.get(i).getLines();
+			totalBlanks += fileList.get(i).getBlanks();
+			totalWords += fileList.get(i).getWords();
+			totalCharacters += fileList.get(i).getCharacters();
+			totalSpaces += fileList.get(i).getSpaces();
+			fileCount++;
+		}
+		if(fileCount != 0)
+		{
+			averageLines = (double)totalLines / fileCount;
+			averageBlanks = (double)totalBlanks / fileCount;
+			averageWords = (double)totalWords / fileCount;
+			averageCharacters = (double)totalCharacters / fileCount;
+			averageSpaces = (double)totalSpaces / fileCount;
+		}
+			
+		avgLinesLabel.setText("" + averageLines);
+		avgBlanksLabel.setText("" + averageBlanks);
+		avgWordsLabel.setText("" + averageWords);
+		avgCharactersLabel.setText("" + averageCharacters);
+		avgSpacesLabel.setText("" + averageSpaces);
+		
+	}
 }

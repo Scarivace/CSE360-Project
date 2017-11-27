@@ -4,6 +4,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Scanner;
+import java.util.*;
+import java.text.*;
 
 import javax.swing.JOptionPane;
 
@@ -17,10 +19,12 @@ public class TextFile
 	private int numWords;
 	private int numCharacters;
 	private int numSpaces;
-	private int avgWordLength;
-	private String longestWord;
-	private String frequentWord;
-	private int frequentWordCount;
+	private int avgWordLength = -1;
+	private String longestWord = "";
+	private String frequentWord = "";
+	private int frequentWordCount = -1;
+	
+	private LinkedList<Word> wordList = new LinkedList<Word>();
 	
 	public TextFile() // Default Constructor
 	{
@@ -31,16 +35,18 @@ public class TextFile
 		numWords = 0;
 		numCharacters = 0;
 		numSpaces = 0;
-		avgWordLength = 0;
+		avgWordLength = -1;
 		longestWord = "";
 		frequentWord = "";
-		frequentWordCount = 0;
+		frequentWordCount = -1;
 	}
 	
 	public TextFile(String name) // Overloaded constructor - just filename
 	{
 		filename = name;
-		dateAnalyzed = "00/00/0000";
+		DateFormat df = new SimpleDateFormat("MM/dd/yyyy");
+		Date date = new Date();
+		dateAnalyzed = df.format(date);
 		
 		File file = new File(name);
 
@@ -52,12 +58,7 @@ public class TextFile
 				numBlankLines = BlankLines(file);
 				numWords = Words(file);
 				numCharacters = Characters(file);
-				numSpaces = Spaces(file);
-				avgWordLength = -1;
-				longestWord = "notdone";
-				frequentWord = "notdone";
-				frequentWordCount = -1;
-				
+
 			}
 			catch (IOException errorMessage)
 			{
@@ -75,7 +76,9 @@ public class TextFile
 	public TextFile(File file) // Overloaded constructor - just file
 	{
 		filename = file.getName();
-		dateAnalyzed = "00/00/0000";
+		DateFormat df = new SimpleDateFormat("MM/dd/yyyy");
+		Date date = new Date();
+		dateAnalyzed = df.format(date);
 
 		if(file.exists() && file.canRead())
 		{
@@ -86,11 +89,6 @@ public class TextFile
 				numWords = Words(file);
 				numCharacters = Characters(file);
 				numSpaces = Spaces(file);
-				avgWordLength = -1;
-				longestWord = "notdone";
-				frequentWord = "notdone";
-				frequentWordCount = -1;
-				
 			}
 			catch (IOException errorMessage)
 			{
@@ -105,7 +103,7 @@ public class TextFile
 		
 	}
 	
-	public TextFile(String name, String date, int lines, int blanks, int words, int characters, int spaces) // overloaded constructor receives all numbers
+	public TextFile(String name, String date, int lines, int blanks, int words, int characters, int spaces, int average, String longest, String frequent, int freqCount) // overloaded constructor receives all numbers
 	{
 		filename = name;
 		dateAnalyzed = date;
@@ -114,10 +112,10 @@ public class TextFile
 		numWords = words;
 		numCharacters = characters;
 		numSpaces = spaces;
-		avgWordLength = -1;
-		longestWord = "notdone";
-		frequentWord = "notdone";
-		frequentWordCount = -1;
+		avgWordLength = average;
+		longestWord = longest;
+		frequentWord = frequent;
+		frequentWordCount = freqCount;
 	}
 	
 	// Get functions
@@ -187,7 +185,7 @@ public class TextFile
 		Scanner fileScanner = new Scanner(file);
 		while(fileScanner.hasNextLine())
 		{
-			String line = fileScanner.nextLine();
+			fileScanner.nextLine();
 			num++;
 		}
 		fileScanner.close();
@@ -218,27 +216,38 @@ public class TextFile
 		return num;
 	}
 	
-	public static int Words(File file) throws IOException 
+	public int Words(File file) throws IOException 
 	{
 
 		FileReader rawFile = new FileReader(file);			// Opened file in file reader.
 		BufferedReader buffFile = new BufferedReader(rawFile);		// Opened new buffered reader.
 		String line = buffFile.readLine();				// First line copied to string.
 		boolean inWord = false;  					// Boolean control variable in a word is false by default.
-		int counter = 0;
+		int counter = 0, startIndex = 0, endIndex = 0, totalLengths = 0;
 
+		System.out.println(wordList.size());
+		
 		while (line != null)   						// While line is not null.
 		{						
 			inWord = false; //set inWord to false at beginning of each line
 			for (int i = 0; i < line.length(); i++) // Iterates through the line char by char while 'i' is < string length.
-			{		
+			{	
       			if (line.charAt(i) == ' ' && inWord) // If current char is a space and in a word boolean is true.
             	{		
                		inWord = false;
+               		endIndex = i;
+               		scrubWord(line.substring(startIndex, endIndex));
                 }
+      			if (i+1 == line.length() && inWord) // word runs to end of line
+      			{
+      				endIndex = i+1;
+      				scrubWord(line.substring(startIndex,endIndex));
+      			}
+      			
            		if (!inWord && line.charAt(i) != ' ') // If not in a word and char is not a space, in a word is set to true.
            		{		
            			inWord = true;
+           			startIndex = i;
                		counter++;				// Counter is incremented.
            		}
 			}
@@ -247,9 +256,63 @@ public class TextFile
 		}
 
 		buffFile.close();						// Close the reader.
+		for(int i = 0; i < wordList.size();i ++)
+		{
+			totalLengths += wordList.get(i).aWord.length();
+			if(wordList.get(i).aWord.length() > longestWord.length())
+			{
+				longestWord = wordList.get(i).getWord();
+			}
+			
+			if(wordList.get(i).getCount() > frequentWordCount)
+			{
+				frequentWord = wordList.get(i).getWord();
+				frequentWordCount = wordList.get(i).getCount();
+			}
+		}
+		avgWordLength = totalLengths / wordList.size();
+		for(int i = 0; i < wordList.size();i++)
+		{
+			System.out.println(wordList.get(i).getWord() + " " + wordList.get(i).getCount());
+		}
 		return counter;							// Return the counter and exit the method.
 	}
 
+	/* scrubWord will remove any punctuation or numbers from a received string, and if 
+	 * there is anything remaining, will check the linked list (wordList) for the word, 
+	 * incrementing the count if found, or adding if not found.
+	 */
+	public void scrubWord(String word)
+	{
+		String scrubbedWord = "";
+		
+		for(int i = 0; i < word.length(); i++)
+		{
+			if(Character.isLetter(word.charAt(i)) || word.charAt(i) == '\'')
+			{
+				scrubbedWord += word.charAt(i);
+			}
+		}
+		if (scrubbedWord != "")
+		{
+			Boolean found = false;
+			int i = 0;
+			while(i < wordList.size() && !found)
+			{
+				if(wordList.get(i).getWord().equals(scrubbedWord))
+				{
+					wordList.get(i).addCount();
+					found = true;
+				}
+				i++;
+			}
+			if(!found)
+			{
+				wordList.add(new Word(scrubbedWord));
+			}
+		}
+	}
+	
 	public static int Characters(File file) throws FileNotFoundException
 	{
 		int numCharacters = 0;  // counter variable initialized to 0
@@ -292,8 +355,9 @@ public class TextFile
 	{
 		String returnString = "";
 		
-		returnString = String.format("%-15s %s %5d %5d %5d %5d %5d %15s %15s %5d", filename, dateAnalyzed, numLines, numBlankLines, numWords, numCharacters, numSpaces, longestWord, frequentWord, frequentWordCount);
-		
+		returnString = String.format("%-15s %-15s %-5d %-5d %-5d %-5d %-5d %-5d %-15s %-15s %-5d", filename, dateAnalyzed, numLines, numBlankLines, numWords, numCharacters, numSpaces, avgWordLength, longestWord, frequentWord, frequentWordCount);
+							
 		return returnString;
 	}
+
 }
