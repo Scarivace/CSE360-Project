@@ -350,7 +350,7 @@ public class textAnalyzer extends JFrame implements ActionListener
 	public void actionPerformed(ActionEvent eventName)
 	{
 		Object source = eventName.getSource();
-		int lines, blankLines, words, characters, spaces;
+		//int lines, blankLines, words, characters, spaces;
 		File file = null;
 		
 		if(source == browseButton)
