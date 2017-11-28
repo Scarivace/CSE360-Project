@@ -351,8 +351,9 @@ public class textAnalyzer extends JFrame implements ActionListener
 	public void actionPerformed(ActionEvent eventName)
 	{
 		Object source = eventName.getSource();
-		//int lines, blankLines, words, characters, spaces;
+
 		File file = null;
+		File deleteFile = null;
 		
 		if(source == browseButton)
 		{
@@ -417,6 +418,21 @@ public class textAnalyzer extends JFrame implements ActionListener
 			longestWordLabel.setText("");
 			mostFrequentLabel.setText("");
 			frequentWordCountLabel.setText("");
+			
+			// Deletes the output file.
+			deleteFile = new File("Output.txt");
+			deleteFile.delete();
+			
+			// Resets "Averages" labels to default.
+			avgLinesLabel.setText(".00");
+			avgBlanksLabel.setText(".00");
+			avgWordsLabel.setText(".00");
+			avgCharactersLabel.setText(".00");
+			avgSpacesLabel.setText(".00");
+			
+			// Deletes JTextArea and resets to default.
+			displayHistory.setText(null);
+			displayHistory.append(historyHeader + "\n");
 		}
 	}
 	
