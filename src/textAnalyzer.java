@@ -107,15 +107,9 @@ public class textAnalyzer extends JFrame implements ActionListener
     {
     	int height = NUM_ROWS * ROW_HEIGHT;
     	
-    	Border blackline, raisedetched, loweredetched, 
-        raisedbevel, loweredbevel, empty;
+    	Border loweredetched;
 
-    	blackline = BorderFactory.createLineBorder(Color.black);
-    	raisedetched = BorderFactory.createEtchedBorder(EtchedBorder.RAISED);
     	loweredetched = BorderFactory.createEtchedBorder(EtchedBorder.LOWERED);
-    	raisedbevel = BorderFactory.createRaisedBevelBorder();
-    	loweredbevel = BorderFactory.createLoweredBevelBorder();	
-    	empty = BorderFactory.createEmptyBorder();
     	
         /* set up the main frame */
         frame.setSize(new Dimension(WIDTH,height));
