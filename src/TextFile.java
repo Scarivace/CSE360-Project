@@ -271,10 +271,6 @@ public class TextFile
 			}
 		}
 		avgWordLength = totalLengths / wordList.size();
-		for(int i = 0; i < wordList.size();i++)
-		{
-			System.out.println(wordList.get(i).getWord() + " " + wordList.get(i).getCount());
-		}
 		return counter;							// Return the counter and exit the method.
 	}
 
