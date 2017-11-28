@@ -224,8 +224,6 @@ public class TextFile
 		String line = buffFile.readLine();				// First line copied to string.
 		boolean inWord = false;  					// Boolean control variable in a word is false by default.
 		int counter = 0, startIndex = 0, endIndex = 0, totalLengths = 0;
-
-		System.out.println(wordList.size());
 		
 		while (line != null)   						// While line is not null.
 		{						
